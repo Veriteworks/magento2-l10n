@@ -22,4 +22,11 @@ interface EsConfigInterface
      * @since 100.1.0
      */
     public function getStopwordsInfo();
+
+    /**
+     * @return array
+     */
+    public function getTokenizerInfo();
+
+    public function getCharFilterInfo();
 }

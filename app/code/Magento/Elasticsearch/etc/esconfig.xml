@@ -28,4 +28,10 @@
         <pt_BR>stopwords_pt_BR.csv</pt_BR>
         <zh_Hans_CN>stopwords_zh_Hans_CN.csv</zh_Hans_CN>
     </stopwords_file>
+    <tokenizer>
+        <default>standard</default>
+    </tokenizer>
+    <char_filter>
+        <default>html_strip</default>
+    </char_filter>
 </config>

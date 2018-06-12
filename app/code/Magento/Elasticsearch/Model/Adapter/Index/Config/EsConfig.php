@@ -42,4 +42,14 @@ class EsConfig extends Data implements EsConfigInterface
     {
         return $this->get('stopwordsInfo');
     }
+
+    public function getTokenizerInfo()
+    {
+        return $this->get('tokenizerInfo');
+    }
+
+    public function getCharFilterInfo()
+    {
+        return $this->get('charFilterInfo');
+    }
 }

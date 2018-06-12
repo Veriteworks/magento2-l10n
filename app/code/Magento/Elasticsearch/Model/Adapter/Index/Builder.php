@@ -84,9 +84,7 @@ class Builder implements BuilderInterface
     protected function getTokenizer()
     {
         $tokenizer = [
-            'default_tokenizer' => [
-                'type' => 'standard',
-            ],
+            'default_tokenizer' => $this->getTokenizerConfig(),
         ];
         return $tokenizer;
     }
@@ -113,7 +111,7 @@ class Builder implements BuilderInterface
     {
         $charFilter = [
             'default_char_filter' => [
-                'type' => 'html_strip',
+                $this->getCharFilterConfig(),
             ],
         ];
         return $charFilter;
@@ -136,6 +134,36 @@ class Builder implements BuilderInterface
         return [
             'type' => $stemmerInfo['type'],
             'language' => $stemmerInfo['default'],
+        ];
+    }
+
+    protected function getTokenizerConfig()
+    {
+        $tokenizerInfo = $this->esConfig->getTokenizerInfo();
+        $this->localeResolver->emulate($this->storeId);
+        $locale = $this->localeResolver->getLocale();
+        if (isset($tokenizerInfo[$locale])) {
+            return [
+                'type' => $tokenizerInfo[$locale]
+            ];
+        }
+        return [
+            'type' => $tokenizerInfo['default']
+        ];
+    }
+
+    protected function getCharFilterConfig()
+    {
+        $charFilterInfo = $this->esConfig->getCharFilterInfo();
+        $this->localeResolver->emulate($this->storeId);
+        $locale = $this->localeResolver->getLocale();
+        if (isset($charFilterInfo[$locale])) {
+            return [
+                'type' => $charFilterInfo[$locale]
+            ];
+        }
+        return [
+            'type' => $charFilterInfo['default']
         ];
     }
 }

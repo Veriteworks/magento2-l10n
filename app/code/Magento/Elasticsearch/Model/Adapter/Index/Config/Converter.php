@@ -34,6 +34,31 @@ class Converter implements ConverterInterface
             }
         }
 
-        return ['stemmerInfo' => $stemmerInfo, 'stopwordsInfo' => $stopwordsInfo];
+        $tokenizer = $source->getElementsByTagName('tokenizer');
+        $tokenizerInfo = [];
+        foreach ($tokenizer as $tokenizerItem) {
+            foreach ($tokenizerItem->childNodes as $childNode) {
+                if ($childNode->nodeType === XML_ELEMENT_NODE) {
+                    $tokenizerInfo[$childNode->localName]= $childNode->textContent;
+                }
+            }
+        }
+
+        $charFilter = $source->getElementsByTagName('char_filter');
+        $charFilterInfo = [];
+        foreach ($charFilter as $charFilterItem) {
+            foreach ($charFilterItem->childNodes as $childNode) {
+                if ($childNode->nodeType === XML_ELEMENT_NODE) {
+                    $charFilterInfo[$childNode->localName]= $childNode->textContent;
+                }
+            }
+        }
+
+        return [
+            'stemmerInfo' => $stemmerInfo,
+            'stopwordsInfo' => $stopwordsInfo,
+            'tokenizerInfo' => $tokenizerInfo,
+            'charFilterInfo' => $charFilterInfo
+        ];
     }
 }
