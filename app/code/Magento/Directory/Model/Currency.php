@@ -298,7 +298,14 @@ class Currency extends \Magento\Framework\Model\AbstractModel
         $addBrackets = false
     ) {
         if (!isset($options['precision'])) {
-            $options['precision'] = $precision;
+            //$options['precision'] = $precision;
+            $currencyFormat = $this->_localeFormat->getPriceFormat();
+            if($precision != $currencyFormat['precision']) {
+                $options['precision'] = $currencyFormat['precision'];
+            } else {
+                $options['precision'] = $precision;
+            }
+
         }
         if ($includeContainer) {
             return '<span class="price">' . ($addBrackets ? '[' : '') . $this->formatTxt(

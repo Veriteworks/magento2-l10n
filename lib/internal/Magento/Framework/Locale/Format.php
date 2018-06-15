@@ -138,7 +138,7 @@ class Format implements \Magento\Framework\Locale\FormatInterface
             'decimalSymbol' => $decimalSymbol,
             'groupSymbol' => $groupSymbol,
             'groupLength' => $group,
-            'integerRequired' => $integerRequired,
+            'integerRequired' => $integerRequired > 0 ? $integerRequired : 0,
         ];
 
         return $result;
