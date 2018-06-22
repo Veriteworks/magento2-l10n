@@ -134,6 +134,9 @@ class Builder implements BuilderInterface
         ];
     }
 
+    /**
+     * @return array
+     */
     protected function getTokenizerConfig()
     {
         $tokenizerInfo = $this->esConfig->getTokenizerInfo();
@@ -149,6 +152,9 @@ class Builder implements BuilderInterface
         ];
     }
 
+    /**
+     * @return mixed
+     */
     protected function getCharFilterConfig()
     {
         $charFilterInfo = $this->esConfig->getCharFilterInfo();
