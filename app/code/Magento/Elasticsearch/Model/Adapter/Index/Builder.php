@@ -45,6 +45,7 @@ class Builder implements BuilderInterface
     public function build()
     {
         $tokenizer = $this->getTokenizer();
+        $analyzerFilter = $this->getCharFilterConfig();
         $filter = $this->getFilter();
         $charFilter = $this->getCharFilter();
 
@@ -54,10 +55,7 @@ class Builder implements BuilderInterface
                     'default' => [
                         'type' => 'custom',
                         'tokenizer' => key($tokenizer),
-                        'filter' => array_merge(
-                            ['lowercase', 'keyword_repeat'],
-                            array_keys($filter)
-                        ),
+                        'filter' => $analyzerFilter,
                         'char_filter' => array_keys($charFilter)
                     ]
                 ],
@@ -66,7 +64,6 @@ class Builder implements BuilderInterface
                 'char_filter' => $charFilter,
             ],
         ];
-
         return $settings;
     }
 
@@ -111,7 +108,7 @@ class Builder implements BuilderInterface
     {
         $charFilter = [
             'default_char_filter' => [
-                $this->getCharFilterConfig(),
+                'type' => 'html_strip'
             ],
         ];
         return $charFilter;
@@ -158,12 +155,8 @@ class Builder implements BuilderInterface
         $this->localeResolver->emulate($this->storeId);
         $locale = $this->localeResolver->getLocale();
         if (isset($charFilterInfo[$locale])) {
-            return [
-                'type' => $charFilterInfo[$locale]
-            ];
+            return $charFilterInfo[$locale];
         }
-        return [
-            'type' => $charFilterInfo['default']
-        ];
+        return $charFilterInfo['default'];
     }
 }

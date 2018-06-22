@@ -44,12 +44,12 @@ class Converter implements ConverterInterface
             }
         }
 
-        $charFilter = $source->getElementsByTagName('char_filter');
-        $charFilterInfo = [];
-        foreach ($charFilter as $charFilterItem) {
-            foreach ($charFilterItem->childNodes as $childNode) {
+        $tokenizerFilter = $source->getElementsByTagName('tokenizer_filter');
+        $tokenizerFilterInfo = [];
+        foreach ($tokenizerFilter as $tokenizerFilterItem) {
+            foreach ($tokenizerFilterItem->childNodes as $childNode) {
                 if ($childNode->nodeType === XML_ELEMENT_NODE) {
-                    $charFilterInfo[$childNode->localName]= $childNode->textContent;
+                    $tokenizerFilterInfo[$childNode->localName] = explode(',', $childNode->textContent);
                 }
             }
         }
@@ -58,7 +58,7 @@ class Converter implements ConverterInterface
             'stemmerInfo' => $stemmerInfo,
             'stopwordsInfo' => $stopwordsInfo,
             'tokenizerInfo' => $tokenizerInfo,
-            'charFilterInfo' => $charFilterInfo
+            'charFilterInfo' => $tokenizerFilterInfo
         ];
     }
 }

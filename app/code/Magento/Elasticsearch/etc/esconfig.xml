@@ -31,7 +31,7 @@
     <tokenizer>
         <default>standard</default>
     </tokenizer>
-    <char_filter>
-        <default>html_strip</default>
-    </char_filter>
+    <tokenizer_filter>
+        <default>lowercase,keyword_repeat</default>
+    </tokenizer_filter>
 </config>

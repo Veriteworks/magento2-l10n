@@ -43,11 +43,17 @@ class EsConfig extends Data implements EsConfigInterface
         return $this->get('stopwordsInfo');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getTokenizerInfo()
     {
         return $this->get('tokenizerInfo');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getCharFilterInfo()
     {
         return $this->get('charFilterInfo');

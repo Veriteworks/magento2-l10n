@@ -28,5 +28,8 @@ interface EsConfigInterface
      */
     public function getTokenizerInfo();
 
+    /**
+     * @return array
+     */
     public function getCharFilterInfo();
 }
