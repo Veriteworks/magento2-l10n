@@ -131,8 +131,8 @@ class PriceCurrencyTest extends \PHPUnit\Framework\TestCase
 
         $currency = $this->getCurrentCurrencyMock();
         $currency->expects($this->once())
-            ->method('formatPrecision')
-            ->with($amount, $precision, [], $includeContainer)
+            ->method('formatPrecisionFromLocale')
+            ->with($amount, [], $includeContainer)
             ->will($this->returnValue($formattedAmount));
 
         $this->assertEquals($formattedAmount, $this->priceCurrency->format(
@@ -158,8 +158,8 @@ class PriceCurrencyTest extends \PHPUnit\Framework\TestCase
         $store = $this->getStoreMock($baseCurrency);
 
         $currency->expects($this->once())
-            ->method('formatPrecision')
-            ->with($convertedAmount, $precision, [], $includeContainer)
+            ->method('formatPrecisionFromLocale')
+            ->with($convertedAmount, [], $includeContainer)
             ->will($this->returnValue($formattedAmount));
 
         $this->assertEquals($formattedAmount, $this->priceCurrency->convertAndFormat(

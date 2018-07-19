@@ -277,7 +277,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      */
     public function format($price, $options = [], $includeContainer = true, $addBrackets = false)
     {
-        return $this->formatPrecision($price, 2, $options, $includeContainer, $addBrackets);
+        return $this->formatPrecisionFromLocale($price, $options, $includeContainer, $addBrackets);
     }
 
     /**
@@ -289,6 +289,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      * @param   bool $includeContainer
      * @param   bool $addBrackets
      * @return  string
+     * @deprecated
      */
     public function formatPrecision(
         $price,
@@ -298,20 +299,41 @@ class Currency extends \Magento\Framework\Model\AbstractModel
         $addBrackets = false
     ) {
         if (!isset($options['precision'])) {
-            //$options['precision'] = $precision;
-            $currencyFormat = $this->_localeFormat->getPriceFormat();
-            if($precision != $currencyFormat['precision']) {
-                $options['precision'] = $currencyFormat['precision'];
-            } else {
-                $options['precision'] = $precision;
-            }
-
+            $options['precision'] = $precision;
         }
         if ($includeContainer) {
             return '<span class="price">' . ($addBrackets ? '[' : '') . $this->formatTxt(
                 $price,
                 $options
             ) . ($addBrackets ? ']' : '') . '</span>';
+        }
+        return $this->formatTxt($price, $options);
+    }
+
+    /**
+     * Apply currency format to number with specific rounding precision from Locale Format
+     *
+     * @param $price
+     * @param $options
+     * @param bool $includeContainer
+     * @param bool $addBrackets
+     * @return string
+     */
+    public function formatPrecisionFromLocale(
+        $price,
+        $options,
+        $includeContainer = true,
+        $addBrackets = false
+    ) {
+        if (!isset($options['precision'])) {
+            $currencyFormat = $this->_localeFormat->getPriceFormat();
+            $options['precision'] = $currencyFormat['precision'];
+        }
+        if ($includeContainer) {
+            return '<span class="price">' . ($addBrackets ? '[' : '') . $this->formatTxt(
+                    $price,
+                    $options
+                ) . ($addBrackets ? ']' : '') . '</span>';
         }
         return $this->formatTxt($price, $options);
     }

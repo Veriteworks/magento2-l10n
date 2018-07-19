@@ -1591,7 +1591,7 @@ class Order extends AbstractModel implements EntityInterface, OrderInterface
      */
     public function formatPricePrecision($price, $precision, $addBrackets = false)
     {
-        return $this->getOrderCurrency()->formatPrecision($price, $precision, [], true, $addBrackets);
+        return $this->getOrderCurrency()->formatPrecisionFromLocale($price, [], true, $addBrackets);
     }
 
     /**
@@ -1634,7 +1634,7 @@ class Order extends AbstractModel implements EntityInterface, OrderInterface
      */
     public function formatBasePricePrecision($price, $precision)
     {
-        return $this->getBaseCurrency()->formatPrecision($price, $precision);
+        return $this->getBaseCurrency()->formatPrecisionFromLocale($price);
     }
 
     /**

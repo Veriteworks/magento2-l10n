@@ -78,7 +78,7 @@ class PriceCurrency implements \Magento\Framework\Pricing\PriceCurrencyInterface
         $currency = null
     ) {
         return $this->getCurrency($scope, $currency)
-            ->formatPrecision($amount, $precision, [], $includeContainer);
+            ->formatPrecisionFromLocale($amount, [], $includeContainer);
     }
 
     /**
