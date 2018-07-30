@@ -64,7 +64,7 @@ class BuilderTest extends \PHPUnit\Framework\TestCase
      */
     public function testBuild($locale)
     {
-        $this->localeResolver->expects($this->once())
+        $this->localeResolver
             ->method('getLocale')
             ->willReturn($locale);
 
