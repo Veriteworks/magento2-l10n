@@ -14,48 +14,21 @@ class Converter implements ConverterInterface
      */
     public function convert($source)
     {
-        $stemmer = $source->getElementsByTagName('stemmer');
-        $stemmerInfo = [];
-        foreach ($stemmer as $stemmerItem) {
-            foreach ($stemmerItem->childNodes as $childNode) {
-                if ($childNode->nodeType === XML_ELEMENT_NODE) {
-                    $stemmerInfo[$childNode->localName]= $childNode->textContent;
-                }
-            }
-        }
+        $stemmerInfo = $this->convertStemmer(
+            $source->getElementsByTagName('stemmer')
+        );
 
-        $stopwords = $source->getElementsByTagName('stopwords_file');
-        $stopwordsInfo = [];
-        foreach ($stopwords as $stopwordsItem) {
-            foreach ($stopwordsItem->childNodes as $childNode) {
-                if ($childNode->nodeType === XML_ELEMENT_NODE) {
-                    $stopwordsInfo[$childNode->localName]= $childNode->textContent;
-                }
-            }
-        }
+        $stopwordsInfo = $this->convertStopwords(
+            $source->getElementsByTagName('stopwords_file')
+        );
 
-        $tokenizer = $source->getElementsByTagName('tokenizer');
-        $tokenizerInfo = [];
-        foreach ($tokenizer as $tokenizerItem) {
-            foreach ($tokenizerItem->childNodes as $childNode) {
-                if ($childNode->nodeType === XML_ELEMENT_NODE) {
-                    $tokenizerInfo[$childNode->localName]= trim($childNode->textContent);
-                }
-            }
-        }
+        $tokenizerInfo = $this->convertTokenizer(
+            $source->getElementsByTagName('tokenizer')
+        );
 
-        /** @var \DOMNodeList $tokenizerFilter */
-        $tokenizerFilter = $source->getElementsByTagName('tokenizer_filter');
-        $tokenizerFilterInfo = [];
-        /** @var \DOMNode $tokenizerFilterItem */
-        foreach ($tokenizerFilter as $tokenizerFilterItem) {
-            /** @var \DOMNode $childNode */
-            foreach ($tokenizerFilterItem->childNodes as $childNode) {
-                if ($childNode->nodeType === XML_ELEMENT_NODE) {
-                    $tokenizerFilterInfo[$childNode->localName] = $this->convertItemNodeToArray($childNode);
-                }
-            }
-        }
+        $tokenizerFilterInfo = $this->convertTokenizerFilter(
+            $source->getElementsByTagName('tokenizer_filter')
+        );
 
         return [
             'stemmerInfo' => $stemmerInfo,
@@ -63,6 +36,86 @@ class Converter implements ConverterInterface
             'tokenizerInfo' => $tokenizerInfo,
             'charFilterInfo' => $tokenizerFilterInfo
         ];
+    }
+
+    /**
+     * Convert XML config with stemmer
+     *
+     * @param \DOMNodeList $stemmer
+     * @return array
+     */
+    private function convertStemmer(\DOMNodeList $stemmer): array
+    {
+        $stemmerInfo = [];
+        foreach ($this->getItemNodes($stemmer) as $element) {
+            $stemmerInfo[$element->localName]= $element->textContent;
+        }
+        return $stemmerInfo;
+    }
+
+    /**
+     * Convert XML config with stop words
+     *
+     * @param \DOMNodeList $stopwords
+     * @return array
+     */
+    private function convertStopwords(\DOMNodeList $stopwords): array
+    {
+        $stopwordsInfo = [];
+        foreach ($this->getItemNodes($stopwords) as $node) {
+            $stopwordsInfo[$node->localName]= $node->textContent;
+        }
+        return $stopwordsInfo;
+    }
+
+    /**
+     * Convert XML config with tokenizer
+     *
+     * @param \DOMNodeList $tokenizer
+     * @return array
+     */
+    private function convertTokenizer(\DOMNodeList $tokenizer): array
+    {
+        $tokenizerInfo = [];
+        foreach ($this->getItemNodes($tokenizer) as $node) {
+           $tokenizerInfo[$node->localName]= trim($node->textContent);
+        }
+        return $tokenizerInfo;
+    }
+
+    /**
+     * Convert XML config with tokenizer filter
+     *
+     * @param \DOMNodeList $tokenizerFilter
+     * @return array
+     */
+    private function convertTokenizerFilter(\DOMNodeList $tokenizerFilter): array
+    {
+        $tokenizerFilterInfo = [];
+        foreach ($this->getItemNodes($tokenizerFilter) as $node) {
+            $tokenizerFilterInfo[$node->localName] = $this->convertItemNodeToArray($node);
+        }
+        return $tokenizerFilterInfo;
+    }
+
+    /**
+     * Fetch element nodes from config structure
+     *
+     * @param \DOMNodeList $nodeList
+     * @return array
+     */
+    private function getItemNodes(\DOMNodeList $nodeList): array
+    {
+        $elements = [];
+        foreach ($nodeList as $node) {
+            /** @var \DOMNode $childNode */
+            foreach ($node->childNodes as $childNode) {
+                if ($childNode->nodeType === XML_ELEMENT_NODE) {
+                    $elements[$childNode->localName] = $childNode;
+                }
+            }
+        }
+        return $elements;
     }
 
     /**
