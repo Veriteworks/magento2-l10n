@@ -39,17 +39,20 @@ class Converter implements ConverterInterface
         foreach ($tokenizer as $tokenizerItem) {
             foreach ($tokenizerItem->childNodes as $childNode) {
                 if ($childNode->nodeType === XML_ELEMENT_NODE) {
-                    $tokenizerInfo[$childNode->localName]= $childNode->textContent;
+                    $tokenizerInfo[$childNode->localName]= trim($childNode->textContent);
                 }
             }
         }
 
+        /** @var \DOMNodeList $tokenizerFilter */
         $tokenizerFilter = $source->getElementsByTagName('tokenizer_filter');
         $tokenizerFilterInfo = [];
+        /** @var \DOMNode $tokenizerFilterItem */
         foreach ($tokenizerFilter as $tokenizerFilterItem) {
+            /** @var \DOMNode $childNode */
             foreach ($tokenizerFilterItem->childNodes as $childNode) {
                 if ($childNode->nodeType === XML_ELEMENT_NODE) {
-                    $tokenizerFilterInfo[$childNode->localName] = explode(',', $childNode->textContent);
+                    $tokenizerFilterInfo[$childNode->localName] = $this->convertItemNodeToArray($childNode);
                 }
             }
         }
@@ -60,5 +63,24 @@ class Converter implements ConverterInterface
             'tokenizerInfo' => $tokenizerInfo,
             'charFilterInfo' => $tokenizerFilterInfo
         ];
+    }
+
+    /**
+     * Convert Item Node to Array
+     *
+     * @param $node
+     * @return array
+     */
+    private function convertItemNodeToArray($node)
+    {
+        $nodeValue = [];
+        foreach($node->childNodes as $child) {
+            $value = trim($child->textContent);
+            if($value) {
+                $nodeValue[] = trim($child->textContent);
+            }
+        }
+
+        return $nodeValue;
     }
 }

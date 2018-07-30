@@ -10,7 +10,7 @@ use Magento\Framework\Config\CacheInterface;
 use Magento\Framework\Config\ReaderInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 
-class EsConfig extends Data implements EsConfigInterface
+class EsConfig extends Data implements EsConfigInterface, AdditionalEsConfigInterface
 {
     /**
      * @param ReaderInterface $reader

@@ -55,7 +55,11 @@ class Builder implements BuilderInterface
                     'default' => [
                         'type' => 'custom',
                         'tokenizer' => key($tokenizer),
-                        'filter' => $analyzerFilter,
+                        'filter' => array_merge(
+                            ['lowercase', 'keyword_repeat'],
+                            array_keys($filter),
+                            $analyzerFilter
+                        ),
                         'char_filter' => array_keys($charFilter)
                     ]
                 ],
@@ -64,6 +68,7 @@ class Builder implements BuilderInterface
                 'char_filter' => $charFilter,
             ],
         ];
+
         return $settings;
     }
 
@@ -81,7 +86,9 @@ class Builder implements BuilderInterface
     protected function getTokenizer()
     {
         $tokenizer = [
-            'default_tokenizer' => $this->getTokenizerConfig(),
+            'default_tokenizer' => [
+                'type' => $this->getTokenizerConfig()
+            ]
         ];
         return $tokenizer;
     }
@@ -108,7 +115,7 @@ class Builder implements BuilderInterface
     {
         $charFilter = [
             'default_char_filter' => [
-                'type' => 'html_strip'
+                'type' => 'html_strip',
             ],
         ];
         return $charFilter;
@@ -120,8 +127,7 @@ class Builder implements BuilderInterface
     protected function getStemmerConfig()
     {
         $stemmerInfo = $this->esConfig->getStemmerInfo();
-        $this->localeResolver->emulate($this->storeId);
-        $locale = $this->localeResolver->getLocale();
+        $locale = $this->getLocale();
         if (isset($stemmerInfo[$locale])) {
             return [
                 'type' => $stemmerInfo['type'],
@@ -140,16 +146,11 @@ class Builder implements BuilderInterface
     protected function getTokenizerConfig()
     {
         $tokenizerInfo = $this->esConfig->getTokenizerInfo();
-        $this->localeResolver->emulate($this->storeId);
-        $locale = $this->localeResolver->getLocale();
+        $locale = $this->getLocale();
         if (isset($tokenizerInfo[$locale])) {
-            return [
-                'type' => $tokenizerInfo[$locale]
-            ];
+            return  $tokenizerInfo[$locale];
         }
-        return [
-            'type' => $tokenizerInfo['default']
-        ];
+        return $tokenizerInfo['default'];
     }
 
     /**
@@ -158,11 +159,22 @@ class Builder implements BuilderInterface
     protected function getCharFilterConfig()
     {
         $charFilterInfo = $this->esConfig->getCharFilterInfo();
-        $this->localeResolver->emulate($this->storeId);
-        $locale = $this->localeResolver->getLocale();
+        $locale = $this->getLocale();
         if (isset($charFilterInfo[$locale])) {
             return $charFilterInfo[$locale];
         }
         return $charFilterInfo['default'];
+    }
+
+
+    /**
+     * get locale code from LocaleResolver by store
+     *
+     * @return null|string
+     */
+    private function getLocale()
+    {
+        $this->localeResolver->emulate($this->storeId);
+        return $this->localeResolver->getLocale();
     }
 }

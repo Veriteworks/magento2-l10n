@@ -29,9 +29,14 @@
         <zh_Hans_CN>stopwords_zh_Hans_CN.csv</zh_Hans_CN>
     </stopwords_file>
     <tokenizer>
-        <default>standard</default>
+        <default>
+            <type>standard</type>
+        </default>
     </tokenizer>
     <tokenizer_filter>
-        <default>lowercase,keyword_repeat</default>
+        <default>
+            <item>lowercase</item>
+            <item>keyword_repeat</item>
+        </default>
     </tokenizer_filter>
 </config>
