@@ -74,9 +74,9 @@ class Converter implements ConverterInterface
     private function convertItemNodeToArray($node)
     {
         $nodeValue = [];
-        foreach($node->childNodes as $child) {
+        foreach ($node->childNodes as $child) {
             $value = trim($child->textContent);
-            if($value) {
+            if ($value) {
                 $nodeValue[] = trim($child->textContent);
             }
         }

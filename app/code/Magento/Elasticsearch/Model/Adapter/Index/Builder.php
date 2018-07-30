@@ -166,7 +166,6 @@ class Builder implements BuilderInterface
         return $charFilterInfo['default'];
     }
 
-
     /**
      * get locale code from LocaleResolver by store
      *
