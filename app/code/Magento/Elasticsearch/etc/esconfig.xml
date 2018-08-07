@@ -33,10 +33,4 @@
             <type>standard</type>
         </default>
     </tokenizer>
-    <tokenizer_filter>
-        <default>
-            <item>lowercase</item>
-            <item>keyword_repeat</item>
-        </default>
-    </tokenizer_filter>
 </config>

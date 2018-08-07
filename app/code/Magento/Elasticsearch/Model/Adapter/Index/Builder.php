@@ -5,6 +5,11 @@
  */
 namespace Magento\Elasticsearch\Model\Adapter\Index;
 
+use Magento\Elasticsearch\Model\Adapter\Index\Config\EsCharFilterConfigInterface;
+use Magento\Elasticsearch\Model\Adapter\Index\Config\EsStemmerConfigInterface;
+use Magento\Elasticsearch\Model\Adapter\Index\Config\EsTokenFilterConfigInterface;
+use Magento\Elasticsearch\Model\Adapter\Index\Config\EsTokenizerConfigInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Locale\Resolver as LocaleResolver;
 use Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfigInterface;
 
@@ -17,6 +22,7 @@ class Builder implements BuilderInterface
 
     /**
      * @var EsConfigInterface
+     * @deprecated
      */
     protected $esConfig;
 
@@ -28,15 +34,57 @@ class Builder implements BuilderInterface
     protected $storeId;
 
     /**
+     * @var EsStemmerConfigInterface
+     */
+    private $stemmerConfig;
+
+    /**
+     * @var EsTokenizerConfigInterface
+     */
+    private $tokenizerConfig;
+
+    /**
+     * @var EsTokenFilterConfigInterface
+     */
+    private $tokenFilterConfig;
+
+    /**
+     * @var EsCharFilterConfigInterface
+     */
+    private $charFilterConfig;
+
+    /**
+     * @var array
+     */
+    private $detectedLocales;
+
+    /**
+     * Builder constructor.
      * @param LocaleResolver $localeResolver
-     * @param EsConfigInterface $esConfig
+     * @param EsConfigInterface $esConfig @deprecated
+     * @param EsStemmerConfigInterface $stemmerConfig
+     * @param EsTokenizerConfigInterface $tokenizerConfig
+     * @param EsTokenFilterConfigInterface $tokenFilterConfig
+     * @param EsCharFilterConfigInterface $charFilterConfig
      */
     public function __construct(
         LocaleResolver $localeResolver,
-        EsConfigInterface $esConfig
+        EsConfigInterface $esConfig,
+        EsStemmerConfigInterface $stemmerConfig = null,
+        EsTokenizerConfigInterface $tokenizerConfig = null,
+        EsTokenFilterConfigInterface $tokenFilterConfig = null,
+        EsCharFilterConfigInterface $charFilterConfig = null
     ) {
         $this->localeResolver = $localeResolver;
         $this->esConfig = $esConfig;
+
+        $om = ObjectManager::getInstance();
+        $this->stemmerConfig = $stemmerConfig ?: $om->get(EsStemmerConfigInterface::class);
+        $this->tokenizerConfig = $tokenizerConfig ?: $om->get(EsTokenizerConfigInterface::class);
+        $this->tokenFilterConfig = $tokenFilterConfig ?: $om->get(EsTokenFilterConfigInterface::class);
+        $this->charFilterConfig = $charFilterConfig ?: $om->get(EsCharFilterConfigInterface::class);
+
+        $this->detectedLocales = [];
     }
 
     /**
@@ -45,9 +93,10 @@ class Builder implements BuilderInterface
     public function build()
     {
         $tokenizer = $this->getTokenizer();
-        $analyzerFilter = $this->getCharFilterConfig();
-        $filter = $this->getFilter();
-        $charFilter = $this->getCharFilter();
+        $customizedTokenFilters = $this->getFilter();
+        $tokenFiltersInUse = $this->getFilterForAnalyzer();
+        $customizedCharFilters = $this->getCharFilter();
+        $charFiltersInUse = $this->getCharFilterForAnalyzer();
 
         $settings = [
             'analysis' => [
@@ -55,17 +104,13 @@ class Builder implements BuilderInterface
                     'default' => [
                         'type' => 'custom',
                         'tokenizer' => key($tokenizer),
-                        'filter' => array_merge(
-                            ['lowercase', 'keyword_repeat'],
-                            array_keys($filter),
-                            $analyzerFilter
-                        ),
-                        'char_filter' => array_keys($charFilter)
+                        'filter' => $tokenFiltersInUse,
+                        'char_filter' => $charFiltersInUse,
                     ]
                 ],
                 'tokenizer' => $tokenizer,
-                'filter' => $filter,
-                'char_filter' => $charFilter,
+                'filter' => $customizedTokenFilters,
+                'char_filter' => $customizedCharFilters,
             ],
         ];
 
@@ -83,42 +128,135 @@ class Builder implements BuilderInterface
     /**
      * @return array
      */
-    protected function getTokenizer()
+    protected function getTokenizer(): array
     {
         $tokenizer = [
-            'default_tokenizer' => [
-                'type' => $this->getTokenizerConfig()
-            ]
+            'default_tokenizer' => $this->selectActiveLocaleConfig(
+                $this->tokenizerConfig->getTokenizerInfo(),
+                [
+                    'type' => 'standard'
+                ]
+            )
         ];
         return $tokenizer;
     }
 
     /**
+     * Get customized filters config
+     *
      * @return array
      */
     protected function getFilter()
     {
-        $filter = [
+        $filters = $this->getPredefinedCustomizedTokenFilters();
+
+        $filters = array_merge(
+            $filters,
+            $this->selectActiveLocaleConfig(
+                $this->tokenFilterConfig->getTokenFiltersInfo(),
+                []
+            )
+        );
+
+        return $filters;
+    }
+
+    /**
+     * Return list of token filter names to use in analyzer
+     *
+     * @return array
+     */
+    private function getFilterForAnalyzer(): array
+    {
+        $predefinedStandardFilters = ['lowercase', 'keyword_repeat'];
+
+        $filters = array_merge(
+            $predefinedStandardFilters,
+            array_keys($this->getPredefinedCustomizedTokenFilters()),
+            array_keys($this->selectActiveLocaleConfig(
+                $this->tokenFilterConfig->getTokenFiltersList(),
+                []
+            ))
+        );
+
+        $filters = array_values(array_unique($filters));
+
+        return $filters;
+    }
+
+    /**
+     * Get configuration of expected token filters.
+     * Configuration of predefined filters may be changed from config.
+     *
+     * @return array
+     */
+    private function getPredefinedCustomizedTokenFilters(): array
+    {
+        return [
             'default_stemmer' => $this->getStemmerConfig(),
             'unique_stem' => [
                 'type' => 'unique',
                 'only_on_same_position' => true
             ]
         ];
-        return $filter;
     }
 
     /**
+     * Get customized filters config
+     *
      * @return array
      */
-    protected function getCharFilter()
+    protected function getCharFilter(): array
     {
-        $charFilter = [
+        $filters = $this->getPredefinedCustomizedCharFilters();
+
+        $filters = array_merge(
+            $filters,
+            $this->selectActiveLocaleConfig(
+                $this->charFilterConfig->getCharFiltersList(),
+                []
+            )
+        );
+
+        return $filters;
+    }
+
+    /**
+     * Return list of char filter names to use in analyzer
+     *
+     * @return array
+     */
+    private function getCharFilterForAnalyzer(): array
+    {
+        $predefinedStandardFilters = [];
+
+        $filters = array_merge(
+            $predefinedStandardFilters,
+            array_keys($this->getPredefinedCustomizedCharFilters()),
+            array_keys($this->selectActiveLocaleConfig(
+                $this->charFilterConfig->getCharFiltersList(),
+                []
+            ))
+        );
+
+        $filters = array_values(array_unique($filters));
+
+        return $filters;
+    }
+
+    /**
+     * Get configuration of expected char filters.
+     * Configuration of predefined filters may be changed from config.
+     *
+     * @return array
+     */
+    private function getPredefinedCustomizedCharFilters(): array
+    {
+        return [
             'default_char_filter' => [
                 'type' => 'html_strip',
             ],
         ];
-        return $charFilter;
     }
 
     /**
@@ -126,54 +264,42 @@ class Builder implements BuilderInterface
      */
     protected function getStemmerConfig()
     {
-        $stemmerInfo = $this->esConfig->getStemmerInfo();
-        $locale = $this->getLocale();
-        if (isset($stemmerInfo[$locale])) {
-            return [
-                'type' => $stemmerInfo['type'],
-                'language' => $stemmerInfo[$locale],
-            ];
-        }
+        $stemmerConfig = $this->stemmerConfig->getStemmerInfo();
         return [
-            'type' => $stemmerInfo['type'],
-            'language' => $stemmerInfo['default'],
+            'type' => $stemmerConfig['type'],
+            'language' => $this->selectActiveLocaleConfig($stemmerConfig, 'english'),
         ];
     }
 
     /**
-     * @return array
-     */
-    protected function getTokenizerConfig()
-    {
-        $tokenizerInfo = $this->esConfig->getTokenizerInfo();
-        $locale = $this->getLocale();
-        if (isset($tokenizerInfo[$locale])) {
-            return  $tokenizerInfo[$locale];
-        }
-        return $tokenizerInfo['default'];
-    }
-
-    /**
+     * Read locale aware config option
+     *
+     * @param array $data
+     * @param mixed $default
      * @return mixed
      */
-    protected function getCharFilterConfig()
+    private function selectActiveLocaleConfig(array $data, $default)
     {
-        $charFilterInfo = $this->esConfig->getCharFilterInfo();
         $locale = $this->getLocale();
-        if (isset($charFilterInfo[$locale])) {
-            return $charFilterInfo[$locale];
+        if (isset($data[$locale])) {
+            return  $data[$locale];
         }
-        return $charFilterInfo['default'];
+        return array_key_exists('default', $data) ? $data['default'] : $default;
     }
 
     /**
-     * get locale code from LocaleResolver by store
+     * Get locale code from LocaleResolver by store.
+     * If no locale code provided fallback to "default"
      *
-     * @return null|string
+     * @return string
      */
-    private function getLocale()
+    private function getLocale() : string
     {
-        $this->localeResolver->emulate($this->storeId);
-        return $this->localeResolver->getLocale();
+        if (!isset($this->detectedLocales[$this->storeId])) {
+            $this->localeResolver->emulate($this->storeId);
+            $this->detectedLocales[$this->storeId] = $this->localeResolver->getLocale() ?: 'default';
+            $this->localeResolver->revert();
+        }
+        return $this->detectedLocales[$this->storeId];
     }
 }

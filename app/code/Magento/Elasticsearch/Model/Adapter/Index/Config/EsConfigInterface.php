@@ -8,8 +8,12 @@ namespace Magento\Elasticsearch\Model\Adapter\Index\Config;
 /**
  * @api
  * @since 100.1.0
+ *
+ * @deprecated Use corresponding interface which provide more specific data
+ * @see \Magento\Elasticsearch\Model\Adapter\Index\Config\EsStemmerConfigInterface
+ * @see \Magento\Elasticsearch\Model\Adapter\Index\Config\EsStopWordsConfigInterface
  */
-interface EsConfigInterface
+interface EsConfigInterface extends EsStemmerConfigInterface, EsStopWordsConfigInterface
 {
     /**
      * @return array
@@ -22,14 +26,4 @@ interface EsConfigInterface
      * @since 100.1.0
      */
     public function getStopwordsInfo();
-
-    /**
-     * @return array
-     */
-    public function getTokenizerInfo();
-
-    /**
-     * @return array
-     */
-    public function getCharFilterInfo();
 }

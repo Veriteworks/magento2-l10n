@@ -5,7 +5,7 @@
  * See COPYING.txt for license details.
  */
 -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/magento2ce/lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
     <preference for="Magento\Elasticsearch\Model\Adapter\FieldMapperInterface" type="Magento\Elasticsearch\Model\Adapter\FieldMapper\FieldMapperResolver" />
     <type name="Magento\Elasticsearch\Model\Adapter\FieldMapper\FieldMapperResolver">
         <arguments>
@@ -38,6 +38,11 @@
     </type>
     <preference for="Magento\Elasticsearch\Model\Adapter\Index\BuilderInterface" type="Magento\Elasticsearch\Model\Adapter\Index\Builder" />
     <preference for="Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfigInterface" type="Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfig" />
+    <preference for="Magento\Elasticsearch\Model\Adapter\Index\Config\EsStemmerConfigInterface" type="Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfig" />
+    <preference for="Magento\Elasticsearch\Model\Adapter\Index\Config\EsStopWordsConfigInterface" type="Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfig" />
+    <preference for="Magento\Elasticsearch\Model\Adapter\Index\Config\EsTokenizerConfigInterface" type="Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfig" />
+    <preference for="Magento\Elasticsearch\Model\Adapter\Index\Config\EsTokenFilterConfigInterface" type="Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfig" />
+    <preference for="Magento\Elasticsearch\Model\Adapter\Index\Config\EsCharFilterConfigInterface" type="Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfig" />
     <type name="Magento\Search\Model\Adminhtml\System\Config\Source\Engine">
         <arguments>
             <argument name="engines" xsi:type="array">
@@ -215,6 +220,9 @@
             <argument name="converter" xsi:type="object">Magento\Elasticsearch\Model\Adapter\Index\Config\Converter</argument>
             <argument name="schemaLocator" xsi:type="object">Magento\Elasticsearch\Model\Adapter\Index\Config\SchemaLocator</argument>
             <argument name="fileName" xsi:type="string">esconfig.xml</argument>
+            <argument name="idAttributes" xsi:type="array">
+                <item name="\/config\/(tokenizer|token_filters|char_filters)\/(default|[a-z][a-z]_[A-Z][A-Z])\/[\/a-zA_Z0-9]+\/item" xsi:type="string">ref</item>
+            </argument>
         </arguments>
     </virtualType>
     <type name="Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfig">

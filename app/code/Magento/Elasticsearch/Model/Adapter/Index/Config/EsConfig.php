@@ -10,7 +10,13 @@ use Magento\Framework\Config\CacheInterface;
 use Magento\Framework\Config\ReaderInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 
-class EsConfig extends Data implements EsConfigInterface, AdditionalEsConfigInterface
+class EsConfig extends Data implements
+    EsStemmerConfigInterface,
+    EsStopWordsConfigInterface,
+    EsTokenizerConfigInterface,
+    EsTokenFilterConfigInterface,
+    EsCharFilterConfigInterface,
+    EsConfigInterface // obsolete, left for backward compatibility
 {
     /**
      * @param ReaderInterface $reader
@@ -44,18 +50,68 @@ class EsConfig extends Data implements EsConfigInterface, AdditionalEsConfigInte
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function getTokenizerInfo()
+    public function getTokenizerInfo(): array
     {
         return $this->get('tokenizerInfo');
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function getCharFilterInfo()
+    public function getTokenFiltersInfo(): array
     {
-        return $this->get('charFilterInfo');
+        return $this->getFiltersInfo('tokenFiltersInfo');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTokenFiltersList(): array
+    {
+        return $this->getFiltersList('tokenFiltersInfo');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCharFiltersInfo(): array
+    {
+        return $this->getFiltersInfo('charFiltersInfo');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCharFiltersList(): array
+    {
+        return $this->getFiltersList('charFiltersInfo');
+    }
+
+    /**
+     * Get customized filters info
+     *
+     * @param string $dataSource
+     * @return array
+     */
+    private function getFiltersInfo(string $dataSource): array
+    {
+        $rawData = $this->get($dataSource);
+        $data = array_map('array_filter', $rawData);
+        return $data;
+    }
+
+    /**
+     * Get used filters list, including standard
+     *
+     * @param string $dataSource
+     * @return array
+     */
+    private function getFiltersList(string $dataSource): array
+    {
+        $rawData = $this->get($dataSource);
+        $data = array_map('array_keys', $rawData);
+        return $data;
     }
 }

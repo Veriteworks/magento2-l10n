@@ -68,8 +68,15 @@ class BuilderTest extends \PHPUnit\Framework\TestCase
             ->method('getLocale')
             ->willReturn($locale);
 
-        $this->esConfig->expects($this->once())
+        $this->esConfig->expects()
             ->method('getStemmerInfo')
+            ->willReturn([
+                'type' => 'stemmer',
+                'default' => 'english',
+                'en_US' => 'english',
+            ]);
+        $this->esConfig->expects()
+            ->method('getTokenizerInfo')
             ->willReturn([
                 'type' => 'stemmer',
                 'default' => 'english',
