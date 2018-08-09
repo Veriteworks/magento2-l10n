@@ -213,7 +213,7 @@ class Builder implements BuilderInterface
         $filters = array_merge(
             $filters,
             $this->selectActiveLocaleConfig(
-                $this->charFilterConfig->getCharFiltersList(),
+                $this->charFilterConfig->getCharFiltersInfo(),
                 []
             )
         );
