@@ -6,6 +6,10 @@
 namespace Magento\Elasticsearch\Test\Unit\Model\Adapter\Index;
 
 use Magento\Elasticsearch\Model\Adapter\Index\Builder;
+use Magento\Elasticsearch\Model\Adapter\Index\Config\EsCharFilterConfigInterface;
+use Magento\Elasticsearch\Model\Adapter\Index\Config\EsStemmerConfigInterface;
+use Magento\Elasticsearch\Model\Adapter\Index\Config\EsTokenFilterConfigInterface;
+use Magento\Elasticsearch\Model\Adapter\Index\Config\EsTokenizerConfigInterface;
 use Magento\Framework\Locale\Resolver as LocaleResolver;
 use Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfigInterface;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
@@ -46,12 +50,43 @@ class BuilderTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $stemmerConfig = $this->getMockBuilder(EsStemmerConfigInterface::class)
+            ->getMockForAbstractClass();
+        $stemmerConfig->method('getStemmerInfo')->willReturn([
+            'type' => 'stemmer',
+            'default' => 'english',
+            'en_US' => 'english',
+            'de_DE' => 'german'
+        ]);
+
+        $tokenizerConfig = $this->getMockBuilder(EsTokenizerConfigInterface::class)
+            ->getMockForAbstractClass();
+        $tokenizerConfig->method('getTokenizerInfo')->willReturn([
+            'default' => [
+                'type' => 'standard',
+            ]
+        ]);
+
+        $tokenFilterConfig = $this->getMockBuilder(EsTokenFilterConfigInterface::class)
+            ->getMockForAbstractClass();
+        $tokenFilterConfig->method('getTokenFiltersInfo')->willReturn([]);
+        $tokenFilterConfig->method('getTokenFiltersList')->willReturn([]);
+
+        $charFilterConfig = $this->getMockBuilder(EsCharFilterConfigInterface::class)
+            ->getMockForAbstractClass();
+        $charFilterConfig->method('getCharFiltersInfo')->willReturn([]);
+        $charFilterConfig->method('getCharFiltersList')->willReturn([]);
+
         $objectManager = new ObjectManagerHelper($this);
         $this->model = $objectManager->getObject(
             \Magento\Elasticsearch\Model\Adapter\Index\Builder::class,
             [
                 'localeResolver' => $this->localeResolver,
-                'esConfig' => $this->esConfig
+                'esConfig' => $this->esConfig,
+                'stemmerConfig' => $stemmerConfig,
+                'tokenizerConfig' => $tokenizerConfig,
+                'tokenFilterConfig' => $tokenFilterConfig,
+                'charFilterConfig' => $charFilterConfig,
             ]
         );
     }
@@ -67,21 +102,6 @@ class BuilderTest extends \PHPUnit\Framework\TestCase
         $this->localeResolver
             ->method('getLocale')
             ->willReturn($locale);
-
-        $this->esConfig->expects()
-            ->method('getStemmerInfo')
-            ->willReturn([
-                'type' => 'stemmer',
-                'default' => 'english',
-                'en_US' => 'english',
-            ]);
-        $this->esConfig->expects()
-            ->method('getTokenizerInfo')
-            ->willReturn([
-                'type' => 'stemmer',
-                'default' => 'english',
-                'en_US' => 'english',
-            ]);
 
         $result = $this->model->build();
         $this->assertNotNull($result);
