@@ -43,19 +43,19 @@
     </xs:complexType>
     <xs:complexType name="tokenizerType">
         <xs:sequence>
-            <xs:element name="type" type="xs:string"/>
+            <xs:element name="type" type="xs:string" minOccurs="0"/>
             <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="filterChoiceType" mixed="true">
-        <xs:choice maxOccurs="unbounded" minOccurs="1">
-            <xs:element type="filterContainerType" name="default" minOccurs="1" maxOccurs="1" />
+        <xs:choice maxOccurs="unbounded">
+            <xs:element type="filterContainerType" name="default" minOccurs="0" />
             <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
         </xs:choice>
     </xs:complexType>
     <xs:complexType name="filterContainerType" mixed="true">
-        <xs:choice maxOccurs="unbounded" minOccurs="1">
+        <xs:choice maxOccurs="unbounded">
             <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
         </xs:choice>
     </xs:complexType>
@@ -77,7 +77,7 @@
         <xs:complexContent>
             <xs:extension base="filterType">
                 <xs:sequence>
-                    <xs:element name="type" type="xs:string"/>
+                    <xs:element name="type" type="xs:string" minOccurs="0"/>
                     <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
                 </xs:sequence>
             </xs:extension>
