@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Elasticsearch:etc/esconfig.xsd">
+    <stemmer>
+        <it_IT>italian</it_IT>
+    </stemmer>
+    <stopwords_file>
+        <it_IT>stopwords_it_IT.csv</it_IT>
+    </stopwords_file>
+    <tokenizer>
+        <it_IT>
+            <type>standard</type>
+            <max_token_length xsi:type="number">100</max_token_length><!-- only for example purpose -->
+        </it_IT>
+    </tokenizer>
+    <token_filters>
+        <it_IT>
+            <italian_elision xsi:type="customizedFilter">
+                <type>elision</type>
+                <articles xsi:type="list">
+                    <item ref="itElisionOverridable" xsi:type="string">should be overridden</item><!-- ref attribute allows to override items in a list -->
+                    <item xsi:type="string">l</item>
+                    <item xsi:type="string">all</item>
+                    <item xsi:type="string">dall</item>
+                    <item xsi:type="string">dell</item>
+                    <item xsi:type="string">nell</item>
+                    <item xsi:type="string">sull</item>
+                    <item xsi:type="string">coll</item>
+                    <item xsi:type="string">pell</item>
+                    <item xsi:type="string">gl</item>
+                    <item xsi:type="string">agl</item>
+                    <item xsi:type="string">dagl</item>
+                    <item xsi:type="string">degl</item>
+                    <item xsi:type="string">negl</item>
+                    <item xsi:type="string">sugl</item>
+                    <item xsi:type="string">un</item>
+                    <item xsi:type="string">m</item>
+                    <item xsi:type="string">t</item>
+                    <item xsi:type="string">s</item>
+                    <item xsi:type="string">v</item>
+                </articles>
+                <articles_case xsi:type="boolean">true</articles_case>
+            </italian_elision>
+        </it_IT>
+    </token_filters>
+    <char_filters>
+        <it_IT>
+            <my_char_filter><!-- Only for example purpose -->
+                <type>pattern_replace</type>
+                <pattern>(\\d+)-(?=\\d)</pattern>
+                <replacement>$1_</replacement>
+            </my_char_filter>
+            <other_char_filter>
+                <type>mapping</type>
+                <mappings>
+                    <item>"٠ => 0"</item>
+                    <item>"١ => 1"</item>
+                    <item>"٢ => 2"</item>
+                    <item>"٣ => 3"</item>
+                    <item>"٤ => 4"</item>
+                    <item>"٥ => 5"</item>
+                    <item>"٦ => 6"</item>
+                    <item>"٧ => 7"</item>
+                    <item>"٨ => 8"</item>
+                    <item>"٩ => 9"</item>
+                </mappings>
+            </other_char_filter>
+        </it_IT>
+    </char_filters>
+</config>

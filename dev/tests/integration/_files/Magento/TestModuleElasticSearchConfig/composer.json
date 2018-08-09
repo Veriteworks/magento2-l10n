@@ -1,0 +1,17 @@
+{
+    "name": "magento/module-test-module-elasticsearch-config",
+    "description": "Test module for ElasticSearch configuration",
+    "require": {
+        "php": "~7.1.3||~7.2.0",
+        "magento/module-elasticsearch": "*"
+    },
+    "type": "magento2-module",
+    "extra": {
+        "map": [
+            [
+                "*",
+                "Magento/TestModuleElasticSearchConfig"
+            ]
+        ]
+    }
+}

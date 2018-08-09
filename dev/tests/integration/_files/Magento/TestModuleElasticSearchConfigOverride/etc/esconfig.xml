@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Elasticsearch:etc/esconfig.xsd">
+    <stemmer>
+        <it_IT>light_italian</it_IT>
+    </stemmer>
+    <tokenizer>
+        <it_IT>
+            <max_token_length xsi:type="number">150</max_token_length><!-- only for example purpose -->
+        </it_IT>
+    </tokenizer>
+    <token_filters>
+        <it_IT>
+            <italian_elision xsi:type="customizedFilter">
+                <articles xsi:type="list">
+                    <item ref="itElisionOverridable" xsi:type="string">c</item><!-- override item in list by ref -->
+                    <item ref="itElisionAdded" xsi:type="string">d</item><!-- ref is required to not conflict with existing items -->
+                </articles>
+                <articles_case xsi:type="boolean">true</articles_case>
+            </italian_elision>
+        </it_IT>
+    </token_filters>
+    <char_filters>
+        <it_IT>
+            <my_char_filter>
+                <replacement>$1:</replacement><!-- override replacement parameter -->
+            </my_char_filter>
+            <other_char_filter disabled="true"/>
+        </it_IT>
+    </char_filters>
+</config>
