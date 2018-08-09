@@ -173,10 +173,10 @@ class Builder implements BuilderInterface
         $filters = array_merge(
             $predefinedStandardFilters,
             array_keys($this->getPredefinedCustomizedTokenFilters()),
-            array_keys($this->selectActiveLocaleConfig(
+            $this->selectActiveLocaleConfig(
                 $this->tokenFilterConfig->getTokenFiltersList(),
                 []
-            ))
+            )
         );
 
         $filters = array_values(array_unique($filters));
@@ -233,10 +233,10 @@ class Builder implements BuilderInterface
         $filters = array_merge(
             $predefinedStandardFilters,
             array_keys($this->getPredefinedCustomizedCharFilters()),
-            array_keys($this->selectActiveLocaleConfig(
+            $this->selectActiveLocaleConfig(
                 $this->charFilterConfig->getCharFiltersList(),
                 []
-            ))
+            )
         );
 
         $filters = array_values(array_unique($filters));
