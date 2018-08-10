@@ -83,7 +83,7 @@ class Converter implements ConverterInterface
     {
         $tokenizerInfo = [];
         foreach ($this->getItemNodes($tokenizer) as $node) {
-           $tokenizerInfo[$node->localName]= $this->convertConfigPart($node);
+            $tokenizerInfo[$node->localName] = $this->convertConfigPart($node);
         }
         return $tokenizerInfo;
     }
@@ -127,7 +127,8 @@ class Converter implements ConverterInterface
      * @param \DOMNode $node
      * @return mixed
      */
-    private function convertConfigPart(\DOMNode $node) {
+    private function convertConfigPart(\DOMNode $node)
+    {
         $type = $this->detectConfigType($node);
         switch ($type) {
             case 'string':
@@ -270,8 +271,7 @@ class Converter implements ConverterInterface
     private function elementChildNodes(\DOMNode $node)
     {
         foreach ($node->childNodes as $child) {
-            if (
-                $child->nodeType === XML_ELEMENT_NODE
+            if ($child->nodeType === XML_ELEMENT_NODE
                 && strcasecmp($child->getAttribute('disabled'), 'true') !== 0
             ) {
                 yield $child;
