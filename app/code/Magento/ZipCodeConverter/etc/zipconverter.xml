@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_ZipCodeConverter:etc/zipconverter.xsd">
+    <converter countryCode="default">
+        <gateway>https://example.com/path/to/api</gateway>
+        <country>#country</country>
+        <zip>#zip</zip>
+        <city>#city</city>
+        <street_1>#street_1</street_1>
+        <street_2>#street_2</street_2>
+    </converter>
+    <converter countryCode="US">
+        <gateway>https://example.com/path/to/api</gateway>
+        <country>#country</country>
+        <zip>#zip</zip>
+        <city>#city</city>
+        <street_1>#street_1</street_1>
+        <street_2>#street_2</street_2>
+    </converter>
+    <converter countryCode  ="JP">
+        <gateway>https://example.com/path/to/api</gateway>
+        <country>#country</country>
+        <zip>#zip</zip>
+        <city>#city</city>
+        <street_1>#street_1</street_1>
+        <street_2>#street_2</street_2>
+    </converter>
+</config>
