@@ -19,6 +19,7 @@ define([
             self = $;
             var postcode = event.target.value;
             //todo: pass value into concrete api implementation
+            //todo: how to find out which model is good for the country?
         }
 
     });

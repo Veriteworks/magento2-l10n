@@ -13,9 +13,10 @@
 
     <xs:complexType name="converterType">
         <xs:sequence>
-            <xs:element name="gateway" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="model" type="xs:string" minOccurs="1" maxOccurs="1"/>
             <xs:element name="country" type="xs:string" minOccurs="1" maxOccurs="1"/>
             <xs:element name="zip" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="region" type="xs:string" minOccurs="1" maxOccurs="1"/>
             <xs:element name="city" type="xs:string" minOccurs="1" maxOccurs="1"/>
             <xs:element name="street_1" type="xs:string" minOccurs="1" maxOccurs="1"/>
             <xs:element name="street_2" type="xs:string" minOccurs="0" maxOccurs="1"/>
@@ -25,7 +26,7 @@
 
     <xs:complexType name="configType">
         <xs:sequence>
-            <xs:element type="converterType" name="zip" maxOccurs="unbounded" minOccurs="1"/>
+            <xs:element type="converterType" name="converter" maxOccurs="unbounded" minOccurs="1"/>
         </xs:sequence>
     </xs:complexType>
 

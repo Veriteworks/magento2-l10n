@@ -16,21 +16,19 @@
         <street_1>#street_1</street_1>
         <street_2>#street_2</street_2>
     </converter>
-    <!--<converter countryCode="US">-->
-        <!--<gateway>https://example.com/path/to/api</gateway>-->
-        <!--<country>#country</country>-->
-        <!--<zip>#zip</zip>-->
-        <!--<region>#region_id</region>-->
-        <!--<city>#city</city>-->
-        <!--<street_1>#street_1</street_1>-->
-        <!--<street_2>#street_2</street_2>-->
-    <!--</converter>-->
+    <converter countryCode="US">
+        <gateway>googleapi</gateway>
+        <country>#country</country>
+        <zip>#zip</zip>
+        <region>#region_id</region>
+        <street_1>#street_1</street_1>
+        <street_2>#street_2</street_2>
+    </converter>
     <converter countryCode="JP">
         <model>madefor</model>
         <country>#country</country>
         <zip>#zip</zip>
         <region>#region_id</region>
-        <city>#city</city>
         <street_1>#street_1</street_1>
         <street_2>#street_2</street_2>
     </converter>
