@@ -1,49 +1,64 @@
 <?php
 namespace Magento\ZipCodeConverter\Block;
 
-use \Magento\Framework\View\Element\Template\Context;
-use \Magento\ZipCodeConverter\Model\Config\ConverterConfig;
-use \Magento\Framework\App\Cache\Type\Config as CacheConfig;
-use \Magento\Directory\Model\ResourceModel\Country\CollectionFactory;
 use \Magento\Directory\Model\ResourceModel\Country\Collection;
 
 class Widget extends \Magento\Directory\Block\Data
 {
 
+    /**
+     * @var string
+     */
     protected $_template = 'Magento_ZipCodeConverter::widget.phtml';
 
+    /**
+     * @var array
+     */
     private $services;
 
+    /**
+     * @var \Magento\ZipCodeConverter\Model\Config\ConverterConfig
+     */
     private $converterConfig;
-
-    private $cacheConfig;
-
-    private $collectionFactory;
 
     /**
      * Widget constructor.
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Framework\App\Cache\Type\Config $configCacheType $configCacheType
-     * @param CollectionFactory $collectionFactory
-     * @param ConverterConfig $converterConfig
+     * @param \Magento\Directory\Helper\Data $directoryHelper
+     * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
+     * @param \Magento\Framework\App\Cache\Type\Config $configCacheType
+     * @param \Magento\Directory\Model\ResourceModel\Region\CollectionFactory $regionCollectionFactory
+     * @param \Magento\Directory\Model\ResourceModel\Country\CollectionFactory $collectionFactory
+     * @param \Magento\ZipCodeConverter\Model\Config\ConverterConfig $converterConfig
      * @param array $services
      * @param array $data
      */
     public function __construct(
-        Context $context,
-        CacheConfig $configCacheType,
-        CollectionFactory $collectionFactory,
-        ConverterConfig $converterConfig,
+        \Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Directory\Helper\Data $directoryHelper,
+        \Magento\Framework\Json\EncoderInterface $jsonEncoder,
+        \Magento\Framework\App\Cache\Type\Config $configCacheType,
+        \Magento\Directory\Model\ResourceModel\Region\CollectionFactory $regionCollectionFactory,
+        \Magento\Directory\Model\ResourceModel\Country\CollectionFactory $collectionFactory,
+        \Magento\ZipCodeConverter\Model\Config\ConverterConfig $converterConfig,
         array $services = [],
         array $data = []
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($context,
+                            $directoryHelper,
+                            $jsonEncoder,
+                            $configCacheType,
+                            $regionCollectionFactory,
+                            $collectionFactory,
+                            $data
+        );
         $this->converterConfig = $converterConfig;
-        $this->cacheConfig = $configCacheType;
         $this->services = $services;
-        $this->collectionFactory = $collectionFactory;
     }
 
+    /**
+     * @return false|string
+     */
     public function getCountryBasedConfiguration()
     {
         $config = [];
@@ -54,13 +69,19 @@ class Widget extends \Magento\Directory\Block\Data
             $countryId = $country->getCountryId();
             $countryConfig =  $this->converterConfig->getConfiguration($countryId);
             if(!is_null($countryConfig)) {
+                $service = $countryConfig['model'];
+                $credential = $this->services[$service]->getCredential();
+                $countryConfig = $countryConfig + $credential;
                 $config[$country->getCountryId()] = $countryConfig;
             } else {
-                $config[$country->getCountryId()] = $this->converterConfig->getDefaultConfiguration();
+                $credential = $this->services['googleapi']->getCredential();
+                $config['default'] = $this->converterConfig->getDefaultConfiguration() + $credential;
             }
         }
 
         return json_encode($config);
     }
+
+
 
 }

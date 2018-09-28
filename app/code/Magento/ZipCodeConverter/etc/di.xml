@@ -40,8 +40,8 @@
     <type name="Magento\ZipCodeConverter\Block\Widget">
         <arguments>
             <argument name="services" xsi:type="array">
-                <item name="googleapi" xsi:type="string">googleapi</item>
-                <item name="madefor" xsi:type="string">madefor</item>
+                <item name="googleapi" xsi:type="object">Magento\ZipCodeConverter\Model\Service\Google</item>
+                <item name="madefor" xsi:type="object">Magento\ZipCodeConverter\Model\Service\MadeFor</item>
             </argument>
         </arguments>
     </type>

@@ -8,7 +8,7 @@ define([
     'use strict';
     var self;
 
-    $.widget('zipcodeconverter', {
+    $.widget('mage.zipconverter', {
         _create: function () {
             self = $;
             $(this.element).on('change', $.proxy(this._search, this));
@@ -16,13 +16,28 @@ define([
         },
 
         _search: function(event) {
-            self = $;
             var postcode = event.target.value;
-            //todo: pass value into concrete api implementation
-            //todo: how to find out which model is good for the country?
+            var services = this.options.services;
+            var country = this.options.country;
+            var countryCode = $(country).val();
+            var service = this._pickupService(services, countryCode);
+
+            var model = require([service.model], function(converter){
+
+                var result = converter(postcode, countryCode, service.credentials);
+                console.log(result);
+            });
+        },
+
+        _pickupService: function (services, country) {
+            var keys = services.keys;
+            if(!services[country]) {
+                return services['default'];
+            }
+            return services[country];
         }
 
     });
 
-    return $.zipcodeconverter;
+    return $.mage.zipconverter;
 });

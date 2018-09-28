@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="zipcode" type="text" translate="label" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="0">
+            <tab>customer</tab>
+            <class>separator-top</class>
+            <label>Zip Code Convert</label>
+            <resource>Magento_ZipCodeConverter::config_catalog</resource>
+            <group id="google" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" translate="label">
+                <label>Google</label>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="key" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Key</label>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

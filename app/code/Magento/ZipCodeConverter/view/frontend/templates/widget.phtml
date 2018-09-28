@@ -1,7 +1,10 @@
 <script type="text/x-magento-init">
     {
         "#zip" : {
-            "zipcodeconverter" : <?=$block->getCountryBasedConfiguration();?>
+            "zipcodeconverter" : {
+            "services" : <?=$block->getCountryBasedConfiguration();?>,
+            "country" : "#country"
+            }
         }
     }
 </script>
